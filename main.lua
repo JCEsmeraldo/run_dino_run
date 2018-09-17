@@ -1,6 +1,7 @@
 local physics = require( "physics" )
 physics.start()
 physics.setGravity( 0, 0 )
+--physics.setDrawMode("hybrid")
 
 local background = display.newImageRect( "assets/background.png", 1280, 720 )
 
@@ -130,9 +131,14 @@ blue:play()
 -- Touch event listener
 local function touchListener( event )
 	print( "Phase: " .. event.phase )
-	print( "Location: " .. tostring(event.x) .. "," .. tostring(event.y) )
-	print( "Unique touch ID: " .. tostring(event.id) )
-	print( "----------" )
+--	print( "Location: " .. tostring(event.x) .. "," .. tostring(event.y) )
+--	print( "Unique touch ID: " .. tostring(event.id) )
+--	print( "----------" )
+	if(event.phase == "began" or event.phase == "moved") then
+		blue:setLinearVelocity( 50, 0 )
+	else
+		blue:setLinearVelocity( -50, 0 )
+	end
 	return true
 end
 background:addEventListener( "touch", touchListener )
