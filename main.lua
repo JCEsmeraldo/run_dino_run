@@ -15,20 +15,32 @@ local ground = display.newRect(display.contentWidth/2, 640, display.contentWidth
 physics.addBody(ground, "static", {density=3.0, friction=0.5, bounce=0})
 ground.myName = "ground"
 
-local background = display.newImageRect( "assets/background.png", 1280, 720 )
+local baseline = 400
+local bg1 = display.newImage( "assets/background.png" )
+bg1.x = 0
+bg1.y = baseline-115
+bg1.yScale = 1.3
+local bg2 = display.newImage( "assets/background.png" )
+bg2.x = 1280
+bg2.y = baseline-115
+bg2.yScale = 1.3
+local tPrevious = system.getTimer()
+local function move(event)
+	local tDelta = event.time - tPrevious
+	tPrevious = event.time
 
+	local xOffset = ( 0.2 * tDelta )
+	bg1.x = bg1.x - xOffset
+	bg2.x = bg2.x - xOffset
 
-background.anchorX = 0
-background.anchorY = 0
-background.x = 0
-background.y = 0
-
-local function reset_landscape( bg )
-	background.x = 0
-	transition.to( background, {x=0-1280+480, time=30000, onComplete=reset_landscape} )
+	if (bg1.x + bg1.contentWidth -400) < 0 then
+		bg1:translate( 1280 * 2, 0)
+	end
+	if (bg2.x + bg2.contentWidth -400) < 0 then
+		bg2:translate( 1280 * 2, 0)
+	end
 end
-
-reset_landscape( background )
+Runtime:addEventListener( "enterFrame", move );
 
 local dinoOptions =
 {
@@ -119,15 +131,16 @@ createFireball()
 
 gameLoopTimer = timer.performWithDelay( 900, gameLoop, 0 )
 local function touchListener( event )
-	if(event.phase == "began" or event.phase == "moved") then
+	blue:setLinearVelocity( 80, 0 )
+	if(event.phase == "began") then
 		blue:setSequence("running")
-		blue:play()
+	elseif(event.phase == "moved") then
 		blue:setLinearVelocity( 80, 0 )
 	else
 		blue:setSequence("walking")
-		blue:play()
 		blue:setLinearVelocity( -80, 0 )
 	end
+	blue:play()
 	return true
 end
 Runtime:addEventListener( "touch", touchListener )
