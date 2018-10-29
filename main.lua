@@ -3,6 +3,12 @@ physics.start()
 physics.setGravity( 0, 0 )
 --physics.setDrawMode("hybrid")
 
+local music
+music = audio.loadSound( "assets/audios/backmusic.mp3" )
+--Faster Does It de Kevin MacLeod está licenciada sob uma licença Creative Commons Attribution (https://creativecommons.org/licenses/by/4.0/)
+--Origem: http://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100794
+--Artista: http://incompetech.com/
+audio.play( music )
 
 leftWall = display.newRect(0, display.contentHeight/2, 1, display.contentHeight )
 physics.addBody(leftWall, "static", ({density=3.0, friction=0.5, bounce=0}))
@@ -15,20 +21,56 @@ local ground = display.newRect(display.contentWidth/2, 640, display.contentWidth
 physics.addBody(ground, "static", {density=3.0, friction=0.5, bounce=0})
 ground.myName = "ground"
 
-local background = display.newImageRect( "assets/background.png", 1280, 720 )
+local baseline = 400
+local bg1 = display.newImage( "assets/background.png" )
+bg1.x = 0
+bg1.y = baseline-115
+bg1.yScale = 1.3
+local bg2 = display.newImage( "assets/background.png" )
+bg2.x = 1280
+bg2.y = baseline-115
+bg2.yScale = 1.3
+local tPrevious = system.getTimer()
+local function move(event)
+	local tDelta = event.time - tPrevious
+	tPrevious = event.time
 
+	local xOffset = ( 0.2 * tDelta )
+	bg1.x = bg1.x - xOffset
+	bg2.x = bg2.x - xOffset
 
-background.anchorX = 0
-background.anchorY = 0
-background.x = 0
-background.y = 0
-
-local function reset_landscape( bg )
-	background.x = 0
-	transition.to( background, {x=0-1280+480, time=30000, onComplete=reset_landscape} )
+	if (bg1.x + bg1.contentWidth -400) < 0 then
+		bg1:translate( 1280 * 2, 0)
+	end
+	if (bg2.x + bg2.contentWidth -400) < 0 then
+		bg2:translate( 1280 * 2, 0)
+	end
+--	print(display.contentWidth/8)
 end
+Runtime:addEventListener( "enterFrame", move );
 
-reset_landscape( background )
+local fireBalls = 0
+local time = "00:00"
+local died = false
+local fireBallsText
+local uiGroup = display.newGroup()    -- Display group for UI objects like the fireBalls
+
+-- Display lives and fireBalls
+fireBallsText = display.newText( uiGroup, "Fire Balls: " .. fireBalls, display.contentWidth - (display.contentWidth/6), 150, native.systemFont, 36 )
+fireBallsText:setFillColor( black )
+timeText = display.newText( uiGroup, "Time: " .. time, display.contentWidth/8, 150, native.systemFont, 36 )
+timeText:setFillColor( black )
+
+local pastTime = 000
+ 
+local function updateTime( event )
+    pastTime = pastTime + 1
+    local minutes = math.floor( pastTime / 60 )
+    local seconds = pastTime % 60
+    local timeDisplay = string.format( "%02d:%02d", minutes, seconds )
+    timeText.text = "Time: " .. timeDisplay
+end
+local countDownTimer = timer.performWithDelay( 1000, updateTime, pastTime )
 
 local dinoOptions =
 {
@@ -110,6 +152,8 @@ local function gameLoop()
 		then
 			display.remove( thisFireBall )
 			table.remove( fireBallTable, i )
+			fireBalls = fireBalls + 1
+			fireBallsText.text = "fireBalls: " .. fireBalls
 		end
 	end
 end
@@ -119,15 +163,16 @@ createFireball()
 
 gameLoopTimer = timer.performWithDelay( 900, gameLoop, 0 )
 local function touchListener( event )
-	if(event.phase == "began" or event.phase == "moved") then
+	blue:setLinearVelocity( 80, 0 )
+	if(event.phase == "began") then
 		blue:setSequence("running")
-		blue:play()
+	elseif(event.phase == "moved") then
 		blue:setLinearVelocity( 80, 0 )
 	else
 		blue:setSequence("walking")
-		blue:play()
 		blue:setLinearVelocity( -80, 0 )
 	end
+	blue:play()
 	return true
 end
 Runtime:addEventListener( "touch", touchListener )
@@ -142,7 +187,12 @@ local function onCollision( event )
 		if ( ( obj1.myName == "blue" and obj2.myName == "fireball" ) or
 				( obj1.myName == "fireball" and obj2.myName == "blue" ) )
 		then
-			print("Collision")
+			print("Collision at " .. pastTime)
+			local collisionSound
+			collisionSound = audio.loadSound( "assets/audios/collisionSound.mp3" )
+			audio.play( collisionSound )
+--			fireBalls = fireBalls + 100
+--			fireBallsText.text = "fireBalls: " .. fireBalls
 
 		elseif ((obj1.myName == "leftWall" and obj2.myName == "blue") or
 				(obj1.myName == "blue" and obj2myName == "leftWall") or
