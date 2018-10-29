@@ -163,17 +163,20 @@ createFireball()
 
 gameLoopTimer = timer.performWithDelay( 900, gameLoop, 0 )
 local function touchListener( event )
-	blue:setLinearVelocity( 80, 0 )
-	if(event.phase == "began") then
-		blue:setSequence("running")
-	elseif(event.phase == "moved") then
+	if(died == false) then
 		blue:setLinearVelocity( 80, 0 )
-	else
-		blue:setSequence("walking")
-		blue:setLinearVelocity( -80, 0 )
+		if(event.phase == "began") then
+			blue:setSequence("running")
+		elseif(event.phase == "moved") then
+			blue:setLinearVelocity( 80, 0 )
+		else
+			blue:setSequence("walking")
+			blue:setLinearVelocity( -80, 0 )
+		end
+		blue:play()
+		return true
 	end
-	blue:play()
-	return true
+	
 end
 Runtime:addEventListener( "touch", touchListener )
 
@@ -187,12 +190,32 @@ local function onCollision( event )
 		if ( ( obj1.myName == "blue" and obj2.myName == "fireball" ) or
 				( obj1.myName == "fireball" and obj2.myName == "blue" ) )
 		then
+			died = true
 			print("Collision at " .. pastTime)
 			local collisionSound
 			collisionSound = audio.loadSound( "assets/audios/collisionSound.mp3" )
 			audio.play( collisionSound )
 --			fireBalls = fireBalls + 100
 --			fireBallsText.text = "fireBalls: " .. fireBalls
+			display.remove( obj1 )
+			display.remove( obj2 )
+
+			for i = #fireBallTable, 1, -1 do
+				if ( fireBallTable[i] == obj1 or fireBallTable[i] == obj2 ) then
+					table.remove( fireBallTable, i )
+					break
+				end
+			end
+
+			ScoreText = display.newText( uiGroup, "GAME OVER", display.contentWidth/ 2 , display.contentHeight/2 - 50 , native.systemFont, 70 )
+			ScoreText:setFillColor( black )
+			
+			ScoreText = display.newText( uiGroup, pastTime .. " Seconds and " .. fireBalls .. " Fireballs", display.contentWidth/ 2 , display.contentHeight/2, native.systemFont, 36 )
+			ScoreText:setFillColor( black )
+			
+				
+
+
 
 		elseif ((obj1.myName == "leftWall" and obj2.myName == "blue") or
 				(obj1.myName == "blue" and obj2myName == "leftWall") or
