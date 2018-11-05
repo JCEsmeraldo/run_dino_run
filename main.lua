@@ -55,6 +55,10 @@ local died = false
 local fireBallsText
 local uiGroup = display.newGroup()    -- Display group for UI objects like the fireBalls
 
+local widget = require( "widget" )
+ 
+
+
 -- Display lives and fireBalls
 fireBallsText = display.newText( uiGroup, "Fire Balls: " .. fireBalls, display.contentWidth - (display.contentWidth/6), 150, native.systemFont, 36 )
 fireBallsText:setFillColor( black )
@@ -64,11 +68,13 @@ timeText:setFillColor( black )
 local pastTime = 000
  
 local function updateTime( event )
-    pastTime = pastTime + 1
-    local minutes = math.floor( pastTime / 60 )
-    local seconds = pastTime % 60
-    local timeDisplay = string.format( "%02d:%02d", minutes, seconds )
-    timeText.text = "Time: " .. timeDisplay
+	if (died == false) then
+		pastTime = pastTime + 1
+		local minutes = math.floor( pastTime / 60 )
+		local seconds = pastTime % 60
+		local timeDisplay = string.format( "%02d:%02d", minutes, seconds )
+		timeText.text = "Time: " .. timeDisplay
+	end	
 end
 local countDownTimer = timer.performWithDelay( 1000, updateTime, pastTime )
 
@@ -95,6 +101,12 @@ local dinoSequenceData =
 	time = 800,
 	loopCount = 0,
 	frames = { 18,19,20,21,22,23 }
+	},
+	{
+	name="jumping",
+	time = 800,
+	loopCount = 0,
+	frames = { 11,12,13,14 }
 	}
 }
 
@@ -152,8 +164,10 @@ local function gameLoop()
 		then
 			display.remove( thisFireBall )
 			table.remove( fireBallTable, i )
-			fireBalls = fireBalls + 1
-			fireBallsText.text = "fireBalls: " .. fireBalls
+			if(died == false) then
+				fireBalls = fireBalls + 1
+				fireBallsText.text = "Fire Balls: " .. fireBalls
+			end
 		end
 	end
 end
@@ -179,6 +193,42 @@ local function touchListener( event )
 	
 end
 Runtime:addEventListener( "touch", touchListener )
+
+jumpingnow = false
+-- Function to handle button events
+local function handleButtonEvent( event )
+	if(died == false) then
+		blue:setLinearVelocity( 80, 20 )
+		if(event.phase == "began") then
+			jumpingnow = true
+			blue:setSequence("jumping")
+			y = blue.y
+			blue:applyLinearImpulse(0, -1, blue.x, blue.y)
+		else
+			jumpingnow = false
+			blue:setSequence("walking")
+			blue:setLinearVelocity( -80, 0 )
+			blue:applyLinearImpulse(0, 0, blue.x, y)
+			blue.y = y
+		end
+		blue:play()
+		return true
+	end
+    if ( "ended" == event.phase ) then
+        print( "Button was pressed and released" )
+    end
+end
+ 
+-- Create the widget
+local button1 = widget.newButton(
+    {
+        left = -40,
+        top = 600,
+        id = "button1",
+        label = "Jump",
+        onEvent = handleButtonEvent
+    }
+)
 
 local function onCollision( event )
 
