@@ -14,6 +14,9 @@ function gotoRate()
 end
 
 function scene:create( event )
+	local music
+	music = audio.loadSound( "assets/audios/backmusic.mp3" )
+	audio.play( music, {channel = 2, loops = -1} )
 
 	-- local menuMusica = audio.loadStream( "menu-musica.wav")
 	-- audio.play(menuMusica, {channel = 1, loops = -1})

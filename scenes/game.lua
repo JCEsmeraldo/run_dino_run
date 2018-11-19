@@ -14,9 +14,9 @@ function scene:create( event )
 	physics.setGravity( 0, 0 )
 	--physics.setDrawMode("hybrid")
 
-	local music
-	music = audio.loadSound( "assets/audios/backmusic.mp3" )
-	audio.play( music, {channel = 2, loops = -1} )
+	
+				
+	collisionSound = audio.loadStream( "assets/audios/collisionSound.mp3" )
 
 	leftWall = display.newRect(0, display.contentHeight/2, 1, display.contentHeight )
 	physics.addBody(leftWall, "static", ({density=3.0, friction=0.5, bounce=0}))
@@ -28,8 +28,9 @@ function scene:create( event )
 	groupGame:insert(rightWall)
 
 	local ground = display.newRect(display.contentWidth/2, 640, display.contentWidth, 110 )
-	physics.addBody(ground, "static", {density=3.0, friction=0.5, bounce=0})
+	physics.addBody(ground, "static", {friction=0.3, bounce=0})
 	ground.myName = "ground"
+	ground.objType = "ground"
 	groupGame:insert(ground)
 
 	-- local fireBalls = 0
@@ -175,7 +176,8 @@ function scene:create( event )
 	blue:scale(3, 1.5)
 	blue.x = 50
 	blue.y = 558
-	physics.addBody( blue, "dynamic", { radius=30, isSensor=true } )
+	physics.addBody( blue, "dynamic", { radius=30, isSensor=true, density=1.0, bounce=0.0 },  
+    { box={ halfWidth=30, halfHeight=10, x=0, y=60 }, isSensor=true } )
 	blue.myName = "blue"
 	blue:play()
 
@@ -215,9 +217,8 @@ function scene:create( event )
 					( obj1.myName == "fireball" and obj2.myName == "blue" ) )
 			then
 				died = true
-				local collisionSound
-				collisionSound = audio.loadSound( "assets/audios/collisionSound.mp3" )
-				audio.play( collisionSound, {channel = 2} )
+				
+				audio.play( collisionSound, {channel = 1} )
 				display.remove( obj1 )
 				display.remove( obj2 )
 
@@ -296,7 +297,7 @@ function scene:hide( event )
 	if ( phase == "will" ) then
 		timer.cancel(createFireballTimer)
 		timer.cancel(countDownTimer)
-		audio.stop(2)
+		-- audio.stop(2)
 	elseif ( phase == "did" ) then
 		Runtime:removeEventListener( "collision", onCollision )
 		Runtime:removeEventListener( "enterFrame", move );

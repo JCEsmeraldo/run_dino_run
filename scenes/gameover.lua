@@ -40,7 +40,6 @@ end
 local scene = composer.newScene()
  
 function gotoGame() 
-	audio.pause( {channel = 1} )
 	composer.gotoScene( "scenes.game" )
 end
 
@@ -136,7 +135,7 @@ function scene:hide( event )
 	if ( phase == "will" ) then
 
 	elseif ( phase == "did" ) then
-		audio.stop(1)
+		-- audio.stop(1)
 		composer.removeScene( "scenes.gameover" )
 	end
 end

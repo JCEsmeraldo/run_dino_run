@@ -83,6 +83,8 @@ function muteGame()
     end
 end
 
+
+
 muteButton = display.newImageRect( "assets/buttons/mute.png", 70, 70 )
 muteButton.x = display.contentWidth - 120
 muteButton.y = 150
