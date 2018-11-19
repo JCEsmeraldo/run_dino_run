@@ -37,6 +37,7 @@ function scene:create( event )
 	fireBalls = 0 
 	local time = "00:00"
 	local died = false
+	local paused = false
 
 	local baseline = 400
 	local bg1 = display.newImage( "assets/background.png" )
@@ -245,6 +246,47 @@ function scene:create( event )
 		end
 	end
 	Runtime:addEventListener( "collision", onCollision )
+	
+	local function pauseGame()
+		if (paused == false) then
+			physics.pause()
+			pauseButton.isVisible = false
+			transition.pause()
+			timer:pauseAllTimers()
+			pauseButton.isVisible = false
+			playButton.isVisible = true
+			timer.pause(countDownTimer)
+			timer.pause(createFireballTimer)
+			
+			paused = true
+		else
+			playButton.isVisible = false
+			pauseButton.isVisible = true
+			physics.start()
+			transition.resume()
+			timer:resumeAllTimers()
+			blue:play()	
+			timer.resume(countDownTimer)
+			timer.resume(createFireballTimer)
+			paused = false
+		end	
+	end	
+
+	pauseButton = display.newImageRect( "assets/buttons/pause.png", 70, 70 )
+	pauseButton.x = display.contentWidth - 40
+	pauseButton.y = 150
+	groupGame:insert( pauseButton )
+
+	playButton = display.newImageRect( "assets/buttons/start.png", 70, 70 )
+	playButton.x = display.contentWidth - 40
+	playButton.y = 150
+	playButton.isVisible = false
+	groupGame:insert( playButton )
+
+	pauseButton:addEventListener( "tap", pauseGame )
+	playButton:addEventListener( "tap", pauseGame )
+	
+
 end
 
 function scene:hide( event )

@@ -64,18 +64,40 @@ function scene:create( event )
 	ScoreText:setFillColor( black )
 	sceneGroup:insert(ScoreText)
 
-	local jogarNovamente = display.newImageRect( "assets/buttons/restart.png", 120, 70 )
+	local jogarNovamente = display.newImageRect( "assets/buttons/restart.png", 120, 120 )
 	jogarNovamente.x = 80
 	jogarNovamente.y = display.contentCenterY + 90
 	sceneGroup:insert(jogarNovamente)
 
-	local inicio = display.newImageRect( "assets/buttons/menu.png", 120, 70 )
+	local inicio = display.newImageRect( "assets/buttons/menu.png", 130, 130 )
 	inicio.x = 240
 	inicio.y = display.contentCenterY + 90
 	sceneGroup:insert(inicio)
 	
 	jogarNovamente:addEventListener( "tap", gotoGame )
 	inicio:addEventListener( "tap", gotoMenu )
+
+	local contador = 0 
+	function buttonAnimation()
+		if(contador >= 0 and contador < 5) then
+			jogarNovamente.xScale = 1.1
+			jogarNovamente.yScale = 1.1
+			inicio.xScale = 1.1
+			inicio.xScale = 1.1
+            contador = contador + 1
+		else if(contador >= 5) then
+			jogarNovamente.xScale = 1
+            jogarNovamente.yScale = 1
+            inicio.xScale = 1
+			inicio.yScale = 1
+			contador = contador + 1
+			if(contador >= 10) then
+				contador = 0
+			end
+		end
+		end
+	end
+	buttonAnimationLoop = timer.performWithDelay( "100", buttonAnimation, -1 )
 
 	loadScores()
 	-- Insert the saved score from the last game into the table, then reset it

@@ -33,8 +33,8 @@ function scene:create( event )
 	start.y = display.contentCenterY + 90
     groupMenu:insert( start )
     
-    local rate = display.newImageRect( "assets/buttons/rate.png", 120, 70 )
-	rate.x = display.contentCenterX + 80
+    local rate = display.newImageRect( "assets/buttons/rate.png", 50, 50 )
+	rate.x = display.contentCenterX + 40
 	rate.y = display.contentCenterY + 90
 	groupMenu:insert( rate )
 
