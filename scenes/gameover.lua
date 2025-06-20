@@ -1,4 +1,6 @@
 local composer = require( "composer" )
+local MuteButton = require("modules.muteButton")
+local muteBtn
 
 -- Initialize variables
 local json = require( "json" )
@@ -50,18 +52,16 @@ end
 function scene:create( event )
 	local sceneGroup = self.view
 
+
 	local background = display.newImageRect( "assets/background.png", 1280, 720 )
 	background.x = display.contentCenterX
 	background.y = display.contentCenterY
 	sceneGroup:insert(background)
 
-	GameOverText = display.newText( uiGroup, "GAME OVER", 160 , display.contentHeight/2 - 50 , native.systemFont, 50 )
-	GameOverText:setFillColor( black )
-	sceneGroup:insert(GameOverText)
-	
-	ScoreText = display.newText( uiGroup, pastTime .. " Seconds", 160 , display.contentHeight/2, native.systemFont, 36 )
-	ScoreText:setFillColor( black )
-	sceneGroup:insert(ScoreText)
+	local GameOverText = display.newText(sceneGroup, "GAME OVER", display.contentCenterX - 350, display.contentHeight/2 - 90 , native.systemFont, 50 )
+    GameOverText:setFillColor( 0 )
+    local ScoreText = display.newText(sceneGroup, (composer.getVariable("finalScore") or 0) .. " Seconds", display.contentCenterX - 350, display.contentHeight/2 - 10, native.systemFont, 36 )
+    ScoreText:setFillColor( 0 )
 
 	local jogarNovamente = display.newImageRect( "assets/buttons/restart.png", 120, 120 )
 	jogarNovamente.x = 80
@@ -125,10 +125,12 @@ function scene:create( event )
 			thisScore.anchorX = 0
         end
     end
+	muteBtn = MuteButton.new(sceneGroup)
 
 end
 
 function scene:hide( event )
+    if muteBtn then display.remove(muteBtn); muteBtn = nil end
 	local sceneGroup = self.view
 	local phase = event.phase
  

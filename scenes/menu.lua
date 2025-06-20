@@ -1,105 +1,83 @@
-local composer = require( "composer" )
- 
+local composer = require("composer")
+local ui = require("modules.ui")
+local env = require("env")
+
 local scene = composer.newScene()
 local groupMenu = display.newGroup()
-local contador = 0 
+local contador = 0
+local music
 
-function gotoGame() 
-	audio.pause( {channel = 1} )
-	composer.gotoScene( "scenes.game" )
+function gotoGame()
+    audio.pause({channel = 1})
+    composer.gotoScene("scenes.game")
 end
 
-function gotoRate() 
-	composer.gotoScene( "scenes.rate" )
+function gotoRate()
+    composer.gotoScene("scenes.rate")
 end
 
-function scene:create( event )
-	local music
-	music = audio.loadSound( "assets/audios/backmusic.mp3" )
-	audio.play( music, {channel = 2, loops = -1} )
+function scene:create(event)
+    -- Música de fundo do menu, respeitando env.MUTE
+    music = audio.loadSound("assets/audios/backmusic.mp3")
+    audio.setVolume(env.MUSIC_VOLUME, {channel=2})
+    if not env.MUTE and not audio.isChannelActive(2) then
+        audio.play(music, {channel = 2, loops = -1})
+    end
 
-	-- local menuMusica = audio.loadStream( "menu-musica.wav")
-	-- audio.play(menuMusica, {channel = 1, loops = -1})
+    local background = display.newImageRect("assets/background.png", 1280, 720)
+    background.x = display.contentCenterX
+    background.y = display.contentCenterY
+    groupMenu:insert(background)
 
-	local background = display.newImageRect( "assets/background.png", 1280, 720 )
-	background.x = display.contentCenterX
-	background.y = display.contentCenterY
-	groupMenu:insert( background )
+    local logo = display.newImageRect("assets/logo.png", 800, 300)
+    logo.x = display.contentCenterX + 10
+    logo.y = display.contentCenterY - 100
+    groupMenu:insert(logo)
 
-	local logo = display.newImageRect( "assets/logo.png", 800, 300 )
-	logo.x = display.contentCenterX + 10
-	logo.y = display.contentCenterY - 100
-	groupMenu:insert( logo )
+    -- Botões do menu
+    local start = ui.createStartButton(groupMenu, display.contentCenterX - 80, display.contentCenterY + 90, gotoGame)
+    local rate = ui.createRateButton(groupMenu, display.contentCenterX + 40, display.contentCenterY + 90, gotoRate)
+    ui.createMuteButton(groupMenu, display.contentWidth - 40, 150)
 
-	local start = display.newImageRect( "assets/buttons/start.png", 120, 70 )
-	start.x = display.contentCenterX - 80
-	start.y = display.contentCenterY + 90
-    groupMenu:insert( start )
-    
-    local rate = display.newImageRect( "assets/buttons/rate.png", 50, 50 )
-	rate.x = display.contentCenterX + 40
-	rate.y = display.contentCenterY + 90
-	groupMenu:insert( rate )
-
-	start:addEventListener( "tap", gotoGame )
-
-	rate:addEventListener( "tap", gotoRate )
-
-	function buttonAnimation()
-		if(contador >= 0 and contador < 5) then
-			start.xScale = 1.1
-			start.yScale = 1.1
-			rate.xScale = 1.1
-			rate.xScale = 1.1
+    -- Animação dos botões
+    function buttonAnimation()
+        if(contador >= 0 and contador < 5) then
+            start.xScale = 1.1
+            start.yScale = 1.1
+            rate.xScale = 1.1
+            rate.yScale = 1.1
             contador = contador + 1
-		else if(contador >= 5) then
-			start.xScale = 1
+        elseif(contador >= 5) then
+            start.xScale = 1
             start.yScale = 1
             rate.xScale = 1
-			rate.yScale = 1
-			contador = contador + 1
-			if(contador >= 10) then
-				contador = 0
-			end
-		end
-		end
-	end
-	buttonAnimationLoop = timer.performWithDelay( "100", buttonAnimation, -1 )
+            rate.yScale = 1
+            contador = contador + 1
+            if(contador >= 10) then
+                contador = 0
+            end
+        end
+    end
+    buttonAnimationLoop = timer.performWithDelay(100, buttonAnimation, -1)
 end
 
-function scene:hide( event )
-	local sceneGroup = self.view
-	local phase = event.phase
- 
-	if ( phase == "will" ) then
-		audio.stop(1)
-		display.remove(groupMenu)
-
-	elseif ( phase == "did" ) then
-		
-	end
+function scene:hide(event)
+    local phase = event.phase
+    if (phase == "will") then
+        display.remove(groupMenu)
+    end
 end
 
-function scene:show( event )
-
-	local sceneGroup = self.view
-	local phase = event.phase
- 
-	if ( phase == "will" ) then
-		composer.removeScene("scenes.gameover")
-		composer.removeScene("scenes.game")
-		composer.removeScene("scenes.rate")
-		-- Code here runs when the scene is still off screen (but is about to come on screen)
- 
-	elseif ( phase == "did" ) then
-		-- Code here runs when the scene is entirely on screen
- 
-	end
+function scene:show(event)
+    local phase = event.phase
+    if (phase == "will") then
+        composer.removeScene("scenes.gameover")
+        composer.removeScene("scenes.game")
+        composer.removeScene("scenes.rate")
+    end
 end
 
-scene:addEventListener( "create", scene )
-scene:addEventListener( "show", scene )
-scene:addEventListener( "hide", scene )
---scene:addEventListener( "destroy", scene )
- 
+scene:addEventListener("create", scene)
+scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
 return scene
