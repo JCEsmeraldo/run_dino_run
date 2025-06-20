@@ -20,7 +20,7 @@ function scene:create(event)
     -- Música de fundo do menu, respeitando env.MUTE
     music = audio.loadSound("assets/audios/backmusic.mp3")
     audio.setVolume(env.MUSIC_VOLUME, {channel=2})
-    if not env.MUTE then
+    if not env.MUTE and not audio.isChannelActive(2) then
         audio.play(music, {channel = 2, loops = -1})
     end
 
@@ -64,7 +64,6 @@ end
 function scene:hide(event)
     local phase = event.phase
     if (phase == "will") then
-        audio.stop(2)
         display.remove(groupMenu)
     end
 end

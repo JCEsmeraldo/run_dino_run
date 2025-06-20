@@ -5,19 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8e00eebe-7b49-41dc-af11-643ec4b2a248" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/env.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/audio.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/devmode.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/dino.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/fireball.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/jumpButton.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/moveButton.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/shield.lua" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/ui.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/muteButton.lua" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/timers.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/env.lua" beforeDir="false" afterPath="$PROJECT_DIR$/env.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.lua" beforeDir="false" afterPath="$PROJECT_DIR$/main.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/game.lua" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/game.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/gameover.lua" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/gameover.lua" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scenes/menu.lua" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/menu.lua" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scenes/rate.lua" beforeDir="false" afterPath="$PROJECT_DIR$/scenes/rate.lua" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +137,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "feat/refactor",
     "last_opened_file_path": "/Users/jcesmeraldo/Projetos/run_dino_run",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -194,7 +190,7 @@
       <workItem from="1539048559142" duration="2848000" />
       <workItem from="1542649880804" duration="51000" />
       <workItem from="1750382807540" duration="364000" />
-      <workItem from="1750383181891" duration="10371000" />
+      <workItem from="1750383181891" duration="12977000" />
     </task>
     <servers />
   </component>
@@ -254,7 +250,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="lua-line">
           <url>file://$PROJECT_DIR$/scenes/game.lua</url>
-          <line>47</line>
+          <line>44</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>

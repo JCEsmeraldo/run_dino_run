@@ -1,5 +1,7 @@
 
 local composer = require( "composer" )
+local MuteButton = require("modules.muteButton")
+local muteBtn
 
 local scene = composer.newScene()
 
@@ -118,7 +120,7 @@ function scene:create( event )
 		end
 	end
 	buttonAnimationLoop = timer.performWithDelay( "100", buttonAnimation, -1 )
-
+    muteBtn = MuteButton.new(sceneGroup)
 end
 
 
@@ -139,6 +141,8 @@ end
 
 
 function scene:hide( event )
+    if muteBtn then display.remove(muteBtn); muteBtn = nil end
+
 	local sceneGroup = self.view
 	local phase = event.phase
  

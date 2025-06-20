@@ -4,12 +4,14 @@ local composer = require("composer")
 local groupGame = display.newGroup()
 local scene = composer.newScene()
 
+local Timers = require("modules.timers")
 local DevMode = require("modules.devmode")
 local Dino = require("modules.dino")
 local Fireball = require("modules.fireball")
 local Shield = require("modules.shield")
 local ui = require("modules.ui")
 local env = require("env")
+local MuteButton = require("modules.muteButton")
 
 local pauseButton, playButton, muteButton
 local collisionSound
@@ -25,15 +27,10 @@ function scene:create(event)
     local sceneGroup = self.view
     sceneGroup:insert(groupGame)
 
-    if muteButton then
-        display.remove(muteButton); muteButton = nil
-    end
-    if pauseButton then
-        display.remove(pauseButton); pauseButton = nil
-    end
-    if playButton then
-        display.remove(playButton); playButton = nil
-    end
+    -- Remove botões se existiam
+    if muteButton then display.remove(muteButton); muteButton = nil end
+    if pauseButton then display.remove(pauseButton); pauseButton = nil end
+    if playButton then display.remove(playButton); playButton = nil end
 
     if DevMode and DevMode.isEnabled and DevMode.isEnabled("devShortcuts") then
         local function devShieldShortcut(event)
@@ -49,7 +46,6 @@ function scene:create(event)
     local physics = require("physics")
     physics.start()
     physics.setGravity(0, 0)
-    --physics.setDrawMode("hybrid")
 
     collisionSound = audio.loadStream("assets/audios/collisionSound.mp3")
 
@@ -157,19 +153,19 @@ function scene:create(event)
             end
         end
     end
-    countDownTimer = timer.performWithDelay(1000, updateTime, pastTime)
+    countDownTimer = Timers.performWithDelay(1000, updateTime, pastTime)
 
     -- Dino
     blue = Dino.new(groupGame)
 
     createFireball()
-    createFireballTimer = timer.performWithDelay(900, createFireball, 0)
+    createFireballTimer = Timers.performWithDelay(900, createFireball, 0)
 
     -- Inicializa o módulo shield!
     Shield.init { group = groupGame, dino = blue }
 
     -- Timer para tentar spawnar shield
-    shieldSpawnTimer = timer.performWithDelay(1000, Shield.trySpawn, 0)
+    shieldSpawnTimer = Timers.performWithDelay(1000, Shield.trySpawn, 0)
 
     local function touchListener(event)
         if not died then
@@ -256,20 +252,16 @@ function scene:create(event)
             physics.pause()
             if pauseButton then pauseButton.isVisible = false end
             transition.pause()
-            timer:pauseAllTimers()
+            Timers.pauseAll()
             if playButton then playButton.isVisible = true end
-            timer.pause(countDownTimer)
-            timer.pause(createFireballTimer)
             paused = true
         else
             if playButton then playButton.isVisible = false end
             if pauseButton then pauseButton.isVisible = true end
             physics.start()
             transition.resume()
-            timer:resumeAllTimers()
+            Timers.resumeAll()
             blue:play()
-            timer.resume(countDownTimer)
-            timer.resume(createFireballTimer)
             paused = false
         end
     end
@@ -277,7 +269,7 @@ function scene:create(event)
     -- Botões centralizados do módulo ui (só cria 1 vez)
     pauseButton = ui.createPauseButton(groupGame, display.contentWidth - 40, 150, pauseGame)
     playButton  = ui.createPlayButton(groupGame, display.contentWidth - 40, 150, pauseGame)
-    muteButton  = ui.createMuteButton(groupGame, display.contentWidth - 110, 150)
+    muteButton  = MuteButton.new(groupGame, display.contentWidth - 110, 150)
 
     -- Clamp do dino na tela
     local function clampDino()
@@ -301,24 +293,13 @@ end
 function scene:hide(event)
     local phase = event.phase
     if (phase == "will") then
-        timer.cancel(createFireballTimer)
-        timer.cancel(countDownTimer)
-        if shieldSpawnTimer then
-            timer.cancel(shieldSpawnTimer)
-            shieldSpawnTimer = nil
-        end
+        Timers.cancelAll()
     elseif (phase == "did") then
         Runtime:removeEventListener("collision", onCollision)
         display.remove(groupGame)
-        if muteButton then
-            display.remove(muteButton); muteButton = nil
-        end
-        if pauseButton then
-            display.remove(pauseButton); pauseButton = nil
-        end
-        if playButton then
-            display.remove(playButton); playButton = nil
-        end
+        if muteButton then display.remove(muteButton); muteButton = nil end
+        if pauseButton then display.remove(pauseButton); pauseButton = nil end
+        if playButton then display.remove(playButton); playButton = nil end
         Shield.cleanup()
     end
 end
